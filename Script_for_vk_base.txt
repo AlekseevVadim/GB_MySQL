@@ -1,0 +1,99 @@
+SHOW DATABASES;
+
+USE vk_base;
+
+SHOW TABLES;
+
+-- Улучшаем таблицу user, просмотрим первые 10 строк
+SELECT * FROM users LIMIT 10;
+--  Правим логику дат создания и обновления
+-- Найдем строки с нарушением логики
+SELECT * FROM users WHERE created_at > updated_at;
+-- Меняем даты обновления в проблемных местах
+UPDATE users SET updated_at = NOW() WHERE created_at > updated_at;
+-- Логика дат восстановлена
+
+-- Улучшаем таблицы cities и countries, просмотрим первые 10 строк
+SELECT * FROM cities LIMIT 10;
+SELECT * FROM countries LIMIT 10;
+SELECT * FROM cities ORDER BY country_id;
+-- Данные уже приемлимо рандомизированы
+
+-- Улучшаем таблицу profiles, просмотрим первые 10 строк
+SELECT * FROM profiles LIMIT 10;
+DESC profiles;
+-- Изменим данные столбца gender
+ALTER TABLE profiles MODIFY COLUMN gender VARCHAR(6);
+UPDATE profiles SET gender = 'None' WHERE gender = 'N';
+UPDATE profiles SET gender = 'Male' WHERE gender = 'M';
+UPDATE profiles SET gender = 'Female' WHERE gender = 'F';
+-- Изменим тип столбца gender
+ALTER TABLE profiles MODIFY COLUMN gender ENUM('Male','Female','None');
+-- Проверим произвольность данных в city_id
+SELECT * FROM profiles ORDER BY city_id;
+-- Данные уже приемлимо рандомизированы
+-- Правим логику дат создания и обновления
+-- Найдем строки с нарушением логики
+SELECT * FROM profiles WHERE created_at > updated_at;
+-- Логика дат не нарушена, так как предыдущими действиями обновили столбец updated_at
+
+-- Улучшаем таблицу messages, просмотрим первые 10 строк
+SELECT * FROM messages LIMIT 10;
+-- Рандомизируем столбец from_user_id
+UPDATE messages SET from_user_id = FLOOR(1 + RAND() * 100);
+SELECT from_user_id FROM messages ORDER BY from_user_id;
+
+
+-- Улучшаем таблицу media, просмотрим первые 10 строк
+SELECT * FROM media LIMIT 10;
+-- Скорректируем записи в filename
+CREATE TEMPORARY TABLE extensions(name VARCHAR(20));
+INSERT INTO extensions VALUES ('avi'), ('jpeg'), ('mp3'), ('mp4'), ('png');
+SELECT * FROM extensions;
+UPDATE media SET filename = CONCAT("https://dropbox.net/vk/",
+filename, ".",
+(SELECT name FROM extensions ORDER BY RAND() LIMIT 1)
+);
+-- Скорректируем записи в size
+UPDATE media SET size = FLOOR(10000 + RAND() * 10000000);
+-- Заполним столбец metadata
+UPDATE media SET metadata = CONCAT('{"owner":"',
+(SELECT CONCAT(first_name, " ", last_name) FROM users WHERE users.id = media.user_id),
+'"}'
+);
+-- Просмотрим ограничения media
+SHOW CREATE TABLE media;
+-- Изменим тип данных столбца metadata
+ALTER TABLE media MODIFY COLUMN metadata JSON;
+
+-- Улучшаем таблицу media_types, просмотрим первые 10 строк
+SELECT * FROM media_types LIMIT 10;
+-- Меняем даты обновления в проблемных местах
+UPDATE media_types SET updated_at = NOW() WHERE created_at > updated_at;
+
+
+-- Улучшаем таблицу communities, просмотрим первые 10 строк
+SELECT * FROM communities;
+SHOW CREATE TABLE communities;
+-- Сократим число групп до 10
+DELETE FROM communities WHERE id > 10;
+-- Меняем даты обновления в проблемных местах
+UPDATE communities SET updated_at = NOW() WHERE created_at > updated_at;
+
+
+-- Улучшаем таблицу communities_users, просмотрим первые 10 строк
+SELECT * FROM communities_users ORDER BY community_id;
+SHOW CREATE TABLE communities_users;
+-- Скорректируем данные столбца community_id с учетом сокращения числа групп
+DELETE FROM communities_users WHERE community_id > 10;
+
+-- Улучшаем таблицу friendship_statuses
+SELECT * FROM friendship_statuses;
+-- Меняем даты обновления в проблемных местах
+UPDATE friendship_statuses SET updated_at = NOW() WHERE created_at > updated_at;
+
+-- Улучшаем таблицу friendship, просмотрим первые 10 строк
+SELECT * FROM friendship LIMIT 10;
+-- Меняем даты в проблемных местах
+UPDATE friendship SET confirmed_at = NOW() WHERE created_at > confirmed_at;
+UPDATE friendship SET updated_at = NOW() WHERE created_at > updated_at;
