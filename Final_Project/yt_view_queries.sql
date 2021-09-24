@@ -1,14 +1,14 @@
--- База данных (БД) yutu_music.
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С… (Р‘Р”) yutu_music.
 
--- Делаем БД активной для работы
+-- Р”РµР»Р°РµРј Р‘Р” Р°РєС‚РёРІРЅРѕР№ РґР»СЏ СЂР°Р±РѕС‚С‹
 USE yutu_music;
 
--- Индексы___________________________________________________________________
+-- РРЅРґРµРєСЃС‹___________________________________________________________________
 SHOW TABLES;
 
 DESC users;
 SHOW INDEX FROM users;
--- Индекс на имя и фамилию пользователя
+-- РРЅРґРµРєСЃ РЅР° РёРјСЏ Рё С„Р°РјРёР»РёСЋ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 CREATE INDEX users_first_name_last_name_idx ON users(first_name, last_name);
 
 DESC profiles;
@@ -16,26 +16,26 @@ SHOW INDEX FROM profiles;
 
 DESC artists;
 SHOW INDEX FROM artists;
--- Индекс на имя исполнителя (так как пользователи часто будут их искать)
+-- РРЅРґРµРєСЃ РЅР° РёРјСЏ РёСЃРїРѕР»РЅРёС‚РµР»СЏ (С‚Р°Рє РєР°Рє РїРѕР»СЊР·РѕРІР°С‚РµР»Рё С‡Р°СЃС‚Рѕ Р±СѓРґСѓС‚ РёС… РёСЃРєР°С‚СЊ)
 CREATE INDEX artists_name_idx ON artists(name);
 
 DESC media;
 SHOW INDEX FROM media;
--- Индекс на имя медиафайла (так как пользователи часто будут их искать)
+-- РРЅРґРµРєСЃ РЅР° РёРјСЏ РјРµРґРёР°С„Р°Р№Р»Р° (С‚Р°Рє РєР°Рє РїРѕР»СЊР·РѕРІР°С‚РµР»Рё С‡Р°СЃС‚Рѕ Р±СѓРґСѓС‚ РёС… РёСЃРєР°С‚СЊ)
 CREATE INDEX media_name_idx ON media(name);
 
 DESC playlists;
 SHOW INDEX FROM playlists;
--- Индекс на имя плейлиста (так как пользователи часто будут их искать)
+-- РРЅРґРµРєСЃ РЅР° РёРјСЏ РїР»РµР№Р»РёСЃС‚Р° (С‚Р°Рє РєР°Рє РїРѕР»СЊР·РѕРІР°С‚РµР»Рё С‡Р°СЃС‚Рѕ Р±СѓРґСѓС‚ РёС… РёСЃРєР°С‚СЊ)
 CREATE INDEX playlists_name_idx ON playlists(name);
 
--- Представления_________________________________________________________
+-- РџСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ_________________________________________________________
 SHOW TABLES;
 
 SELECT * FROM users;
 SELECT * FROM profiles;
--- Представление с информацией о пользователе
--- Создание запроса
+-- РџСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»Рµ
+-- РЎРѕР·РґР°РЅРёРµ Р·Р°РїСЂРѕСЃР°
 SELECT u.id, u.first_name as 'fist_name', u.last_name as 'last name',
 u.email as email,
 p.gender, p.birthday, c.name as 'city', c2.name as 'country',
@@ -48,7 +48,7 @@ JOIN cities c
 ON p.city_id = c.id 
 JOIN countries c2 
 ON c2.id = c.country_id;
--- Создание представления на основе запроса
+-- РЎРѕР·РґР°РЅРёРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РЅР° РѕСЃРЅРѕРІРµ Р·Р°РїСЂРѕСЃР°
 CREATE VIEW users_info AS
 SELECT u.id, u.first_name as 'fist_name', u.last_name as 'last_name',
 u.email as email,
@@ -62,12 +62,12 @@ JOIN cities c
 ON p.city_id = c.id 
 JOIN countries c2 
 ON c2.id = c.country_id;
--- Обращение к представлению
+-- РћР±СЂР°С‰РµРЅРёРµ Рє РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ
 SELECT * FROM users_info;
 -- DROP VIEW IF EXISTS users_info; 
 
--- Представление со статистикой об исполнителе
--- Создание запроса
+-- РџСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ СЃРѕ СЃС‚Р°С‚РёСЃС‚РёРєРѕР№ РѕР± РёСЃРїРѕР»РЅРёС‚РµР»Рµ
+-- РЎРѕР·РґР°РЅРёРµ Р·Р°РїСЂРѕСЃР°
 SELECT DISTINCT a.id, a.user_id, a.name,
 COUNT(m.id) OVER (PARTITION BY a.id, p.id, l.id) as count_media,
 SUM(case when m.media_type = 'track' then 1 else 0 end) OVER (PARTITION BY a.id, p.id, l.id) as count_track,
@@ -83,7 +83,7 @@ ON p.artist_id = a.id AND p.playlist_type = 'album'
 LEFT JOIN likes l 
 ON l.target_id = a.id AND l.target_type = 'artist'
 ORDER BY a.id;
--- Создание представления на основе запроса
+-- РЎРѕР·РґР°РЅРёРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РЅР° РѕСЃРЅРѕРІРµ Р·Р°РїСЂРѕСЃР°
 CREATE VIEW artists_stats AS
 SELECT DISTINCT a.id, a.user_id, a.name,
 COUNT(m.id) OVER (PARTITION BY a.id, p.id, l.id) as count_media,
@@ -100,13 +100,13 @@ ON p.artist_id = a.id AND p.playlist_type = 'album'
 LEFT JOIN likes l 
 ON l.target_id = a.id AND l.target_type = 'artist'
 ORDER BY a.id;
--- Обращение к представлению
+-- РћР±СЂР°С‰РµРЅРёРµ Рє РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЋ
 SELECT * FROM artists_stats;
 DROP VIEW IF EXISTS artists_stats;
 
--- Выборки__________________________________________________________________________________
+-- Р’С‹Р±РѕСЂРєРё__________________________________________________________________________________
 
--- Выборка с подсчетом количеств прослушиваний для разных жанров с 7 до 10 утра.
+-- Р’С‹Р±РѕСЂРєР° СЃ РїРѕРґСЃС‡РµС‚РѕРј РєРѕР»РёС‡РµСЃС‚РІ РїСЂРѕСЃР»СѓС€РёРІР°РЅРёР№ РґР»СЏ СЂР°Р·РЅС‹С… Р¶Р°РЅСЂРѕРІ СЃ 7 РґРѕ 10 СѓС‚СЂР°.
 SELECT DISTINCT m.metadata ->> "$.genre" AS genre,
 COUNT(user_id) OVER (PARTITION BY m.metadata ->> "$.genre")
 FROM users_plays up
@@ -115,7 +115,7 @@ ON up.target_id = m.id
 WHERE (up.play_time >= '00:00:40') AND 
 (TIME(up.created_at) >= '07:00:00') AND (TIME(up.created_at) <= '10:00:00');
 
--- Подсчет числа пользователей по возрастным группам
+-- РџРѕРґСЃС‡РµС‚ С‡РёСЃР»Р° РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РїРѕ РІРѕР·СЂР°СЃС‚РЅС‹Рј РіСЂСѓРїРїР°Рј
 SELECT
 FLOOR(TIMESTAMPDIFF(YEAR, birthday, NOW()) / 10) AS age_group,
 COUNT(ui.id)
@@ -123,7 +123,7 @@ FROM users_info ui
 GROUP BY age_group
 ORDER BY age_group;
 
--- Выборка прослушенных конкретным пользователем медиа
+-- Р’С‹Р±РѕСЂРєР° РїСЂРѕСЃР»СѓС€РµРЅРЅС‹С… РєРѕРЅРєСЂРµС‚РЅС‹Рј РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РјРµРґРёР°
 SELECT up.target_id, up.play_time, up.created_at, 
 m.artist_id, m.media_type, m.metadata ->> "$.genre" AS genre 
 FROM users_plays up 
@@ -131,7 +131,7 @@ JOIN media m
 ON m.id = up.target_id 
 WHERE up.user_id = 15 AND up.play_time > '00:00:40';
 
--- Выборка медиа, подобранного на основании наиболее прослушиваемого пользователем жанра
+-- Р’С‹Р±РѕСЂРєР° РјРµРґРёР°, РїРѕРґРѕР±СЂР°РЅРЅРѕРіРѕ РЅР° РѕСЃРЅРѕРІР°РЅРёРё РЅР°РёР±РѕР»РµРµ РїСЂРѕСЃР»СѓС€РёРІР°РµРјРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј Р¶Р°РЅСЂР°
 SELECT ma.id, ma.artist_id, ma.metadata ->> "$.genre" AS genre FROM media ma
 WHERE (ma.metadata ->> "$.genre") = (SELECT genre FROM (
 	SELECT 
@@ -145,7 +145,7 @@ WHERE (ma.metadata ->> "$.genre") = (SELECT genre FROM (
 	ORDER BY (- count_play) LIMIT 1
 ) AS genre_prf);
 
--- Выборка стран c подсчетом числа созданных пользователями до 20 лет плейлистов
+-- Р’С‹Р±РѕСЂРєР° СЃС‚СЂР°РЅ c РїРѕРґСЃС‡РµС‚РѕРј С‡РёСЃР»Р° СЃРѕР·РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРјРё РґРѕ 20 Р»РµС‚ РїР»РµР№Р»РёСЃС‚РѕРІ
 SELECT DISTINCT
 COUNT(pl.id) OVER (PARTITION BY ui.country) AS count_pl,
 ui.country 

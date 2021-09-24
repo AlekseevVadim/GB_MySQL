@@ -1,141 +1,141 @@
--- База данных (БД) yutu_music.
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С… (Р‘Р”) yutu_music.
 
--- Создаём БД
+-- РЎРѕР·РґР°С‘Рј Р‘Р”
 CREATE DATABASE yutu_music;
 
--- Делаем БД активной для работы
+-- Р”РµР»Р°РµРј Р‘Р” Р°РєС‚РёРІРЅРѕР№ РґР»СЏ СЂР°Р±РѕС‚С‹
 USE yutu_music;
 
--- Создание таблиц
+-- РЎРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†
 SHOW TABLES;
 
--- Таблица пользователей
+-- РўР°Р±Р»РёС†Р° РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 -- DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки", 
-  first_name VARCHAR(100) NOT NULL COMMENT "Имя пользователя",
-  last_name VARCHAR(100) NOT NULL COMMENT "Фамилия пользователя",
-  email VARCHAR(100) NOT NULL UNIQUE COMMENT "Почта",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
-) COMMENT "Пользователи"; 
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё", 
+  first_name VARCHAR(100) NOT NULL COMMENT "РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
+  last_name VARCHAR(100) NOT NULL COMMENT "Р¤Р°РјРёР»РёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
+  email VARCHAR(100) NOT NULL UNIQUE COMMENT "РџРѕС‡С‚Р°",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё"
+) COMMENT "РџРѕР»СЊР·РѕРІР°С‚РµР»Рё"; 
 
 -- SHOW CREATE TABLE users;
 
--- Таблица профилей
+-- РўР°Р±Р»РёС†Р° РїСЂРѕС„РёР»РµР№
 -- DROP TABLE IF EXISTS profiles;
 CREATE TABLE profiles (
-  user_id INT UNSIGNED NOT NULL PRIMARY KEY COMMENT "Ссылка на идентификатор пользователя", 
-  gender ENUM('Male', 'Female', 'None') NOT NULL COMMENT "Пол",
-  birthday DATE COMMENT "Дата рождения",
-  city_id INT UNSIGNED COMMENT "Ссылка на город проживания",
-  paid_memberships ENUM('default', 'premium') COMMENT "Тип подписки на сервис",
-  restricted_mode BOOLEAN COMMENT "Режим ограничения ненормативного контента",
-  net_adress VARCHAR(255) NOT NULL COMMENT "Ссылка на персональную страницу пользователя",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
-) COMMENT "Профили"; 
+  user_id INT UNSIGNED NOT NULL PRIMARY KEY COMMENT "РЎСЃС‹Р»РєР° РЅР° РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ", 
+  gender ENUM('Male', 'Female', 'None') NOT NULL COMMENT "РџРѕР»",
+  birthday DATE COMMENT "Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ",
+  city_id INT UNSIGNED COMMENT "РЎСЃС‹Р»РєР° РЅР° РіРѕСЂРѕРґ РїСЂРѕР¶РёРІР°РЅРёСЏ",
+  paid_memberships ENUM('default', 'premium') COMMENT "РўРёРї РїРѕРґРїРёСЃРєРё РЅР° СЃРµСЂРІРёСЃ",
+  restricted_mode BOOLEAN COMMENT "Р РµР¶РёРј РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РЅРµРЅРѕСЂРјР°С‚РёРІРЅРѕРіРѕ РєРѕРЅС‚РµРЅС‚Р°",
+  net_adress VARCHAR(255) NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РїРµСЂСЃРѕРЅР°Р»СЊРЅСѓСЋ СЃС‚СЂР°РЅРёС†Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё"
+) COMMENT "РџСЂРѕС„РёР»Рё"; 
 
 -- SHOW CREATE TABLE profiles;
 
--- Таблица городов
+-- РўР°Р±Р»РёС†Р° РіРѕСЂРѕРґРѕРІ
 -- DROP TABLE IF EXISTS cities;
 CREATE TABLE cities (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(150) NOT NULL,
   country_id INT UNSIGNED
-) COMMENT "Города";
+) COMMENT "Р“РѕСЂРѕРґР°";
 
--- Таблица стран
+-- РўР°Р±Р»РёС†Р° СЃС‚СЂР°РЅ
 -- DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(150) NOT NULL
-) COMMENT "Страны";
+) COMMENT "РЎС‚СЂР°РЅС‹";
 
--- Таблица исполнителей
+-- РўР°Р±Р»РёС†Р° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
 -- DROP TABLE IF EXISTS artists;
 CREATE TABLE artists (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на таблицу users",
-  name VARCHAR(100) NOT NULL COMMENT "Наименование исполнителя",
-  description TEXT COMMENT "Описание исполнителя",
-  net_adress VARCHAR(255) NOT NULL COMMENT "Ссылка на страницу исполнителя",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
-) COMMENT "Исполнители"; 
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё",
+  user_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° С‚Р°Р±Р»РёС†Сѓ users",
+  name VARCHAR(100) NOT NULL COMMENT "РќР°РёРјРµРЅРѕРІР°РЅРёРµ РёСЃРїРѕР»РЅРёС‚РµР»СЏ",
+  description TEXT COMMENT "РћРїРёСЃР°РЅРёРµ РёСЃРїРѕР»РЅРёС‚РµР»СЏ",
+  net_adress VARCHAR(255) NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° СЃС‚СЂР°РЅРёС†Сѓ РёСЃРїРѕР»РЅРёС‚РµР»СЏ",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё"
+) COMMENT "РСЃРїРѕР»РЅРёС‚РµР»Рё"; 
 
 -- SHOW CREATE TABLE artists;
 
--- Таблица медиафайлов
+-- РўР°Р±Р»РёС†Р° РјРµРґРёР°С„Р°Р№Р»РѕРІ
 -- DROP TABLE IF EXISTS media;
 CREATE TABLE media (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-  name VARCHAR(100) NOT NULL COMMENT "Наименование",
-  artist_id INT UNSIGNED NOT NULL COMMENT "Ссылка на исполнителя",
-  file_path VARCHAR(255) NOT NULL COMMENT "Путь к файлу",
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё",
+  name VARCHAR(100) NOT NULL COMMENT "РќР°РёРјРµРЅРѕРІР°РЅРёРµ",
+  artist_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РёСЃРїРѕР»РЅРёС‚РµР»СЏ",
+  file_path VARCHAR(255) NOT NULL COMMENT "РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ",
   media_type ENUM('track','music_video') NOT NULL,
-  size TIME NOT NULL COMMENT "Продолжительность композиции",
-  exp_content BOOLEAN COMMENT "Наличие ненормативного контента",
-  metadata JSON DEFAULT NULL COMMENT "Метаданные файла",
-  lyrics TEXT COMMENT "Текст композиции",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
-) COMMENT "Медиафайлы";
+  size TIME NOT NULL COMMENT "РџСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ РєРѕРјРїРѕР·РёС†РёРё",
+  exp_content BOOLEAN COMMENT "РќР°Р»РёС‡РёРµ РЅРµРЅРѕСЂРјР°С‚РёРІРЅРѕРіРѕ РєРѕРЅС‚РµРЅС‚Р°",
+  metadata JSON DEFAULT NULL COMMENT "РњРµС‚Р°РґР°РЅРЅС‹Рµ С„Р°Р№Р»Р°",
+  lyrics TEXT COMMENT "РўРµРєСЃС‚ РєРѕРјРїРѕР·РёС†РёРё",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё"
+) COMMENT "РњРµРґРёР°С„Р°Р№Р»С‹";
 
 -- SHOW CREATE TABLE media;
 
--- Таблица плейлистов
+-- РўР°Р±Р»РёС†Р° РїР»РµР№Р»РёСЃС‚РѕРІ
 -- DROP TABLE IF EXISTS playlists;
 CREATE TABLE playlists (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки", 
-  name VARCHAR(100) NOT NULL COMMENT "Наименование плейлиста",
-  artist_id INT UNSIGNED NOT NULL COMMENT "Ссылка на автора",
-  description TEXT COMMENT "Описание плейлиста",
-  playlist_type enum('playlist','album') NOT NULL DEFAULT 'playlist' COMMENT "Тип плейлиста",
-  metadata JSON DEFAULT NULL COMMENT "Метаданные файла",
-  image_path VARCHAR(255) NOT NULL COMMENT "Путь к файлу обложки",
-  security_type enum('private','public','link') NOT NULL COMMENT "Тип доступа к плейлисту",
-  net_adress VARCHAR(255) NOT NULL COMMENT "Ссылка на страницу альбома",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
-) COMMENT "Плейлисты"; 
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё", 
+  name VARCHAR(100) NOT NULL COMMENT "РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїР»РµР№Р»РёСЃС‚Р°",
+  artist_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° Р°РІС‚РѕСЂР°",
+  description TEXT COMMENT "РћРїРёСЃР°РЅРёРµ РїР»РµР№Р»РёСЃС‚Р°",
+  playlist_type enum('playlist','album') NOT NULL DEFAULT 'playlist' COMMENT "РўРёРї РїР»РµР№Р»РёСЃС‚Р°",
+  metadata JSON DEFAULT NULL COMMENT "РњРµС‚Р°РґР°РЅРЅС‹Рµ С„Р°Р№Р»Р°",
+  image_path VARCHAR(255) NOT NULL COMMENT "РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ РѕР±Р»РѕР¶РєРё",
+  security_type enum('private','public','link') NOT NULL COMMENT "РўРёРї РґРѕСЃС‚СѓРїР° Рє РїР»РµР№Р»РёСЃС‚Сѓ",
+  net_adress VARCHAR(255) NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° СЃС‚СЂР°РЅРёС†Сѓ Р°Р»СЊР±РѕРјР°",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё"
+) COMMENT "РџР»РµР№Р»РёСЃС‚С‹"; 
 
 -- SHOW CREATE TABLE playlists;
 
--- Таблица содержимого плейлистов
+-- РўР°Р±Р»РёС†Р° СЃРѕРґРµСЂР¶РёРјРѕРіРѕ РїР»РµР№Р»РёСЃС‚РѕРІ
 -- DROP TABLE IF EXISTS playlists_objects;
 CREATE TABLE playlists_objects (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT "Идентификатор строки",
-  playlist_id INT UNSIGNED NOT NULL COMMENT "Ссылка на плейлист",
-  media_id INT UNSIGNED NOT NULL COMMENT "Ссылка на идентификатор медиа",
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё",
+  playlist_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РїР»РµР№Р»РёСЃС‚",
+  media_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРµРґРёР°",
   num_on_play INT UNSIGNED NOT NULL DEFAULT '0',
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки",
-  PRIMARY KEY (id) COMMENT "Первичный ключ"
-) COMMENT "Состав плейлистов";
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё",
+  PRIMARY KEY (id) COMMENT "РџРµСЂРІРёС‡РЅС‹Р№ РєР»СЋС‡"
+) COMMENT "РЎРѕСЃС‚Р°РІ РїР»РµР№Р»РёСЃС‚РѕРІ";
 
 -- SHOW CREATE TABLE playlists_objects;
 
--- Таблица лайков
+-- РўР°Р±Р»РёС†Р° Р»Р°Р№РєРѕРІ
 -- DROP TABLE IF EXISTS likes;
 CREATE TABLE likes (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на пользователя",
-  target_id INT UNSIGNED NOT NULL COMMENT "Ссылка на идентификатор объекта лайка",
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё",
+  user_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
+  target_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РѕР±СЉРµРєС‚Р° Р»Р°Р№РєР°",
   target_type ENUM('media','playlist','artist') NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- SHOW CREATE TABLE likes;
 
--- Таблица прослушиваний
+-- РўР°Р±Р»РёС†Р° РїСЂРѕСЃР»СѓС€РёРІР°РЅРёР№
 -- DROP TABLE IF EXISTS users_plays;
 CREATE TABLE users_plays (
-  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на пользователя",
-  target_id INT UNSIGNED NOT NULL COMMENT "Ссылка на идентификатор прослушанного медиа",
-  play_time TIME NOT NULL COMMENT "Продолжительность прослушивания",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",
+  user_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
+  target_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїСЂРѕСЃР»СѓС€Р°РЅРЅРѕРіРѕ РјРµРґРёР°",
+  play_time TIME NOT NULL COMMENT "РџСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ РїСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",
   PRIMARY KEY (user_id, created_at)
 );
 

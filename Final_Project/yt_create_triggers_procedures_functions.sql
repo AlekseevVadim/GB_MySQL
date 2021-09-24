@@ -1,12 +1,12 @@
--- База данных (БД) yutu_music.
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С… (Р‘Р”) yutu_music.
 
--- Делаем БД активной для работы
+-- Р”РµР»Р°РµРј Р‘Р” Р°РєС‚РёРІРЅРѕР№ РґР»СЏ СЂР°Р±РѕС‚С‹
 USE yutu_music;
 
--- Создаем тригеры
+-- РЎРѕР·РґР°РµРј С‚СЂРёРіРµСЂС‹
 
--- функция проверки существования строки с соответствующим идентификатором в таблице,
--- принимающая идентификатор и некоторую ссылку на таблицу для проверки, и возвращающая boolean
+-- С„СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ СЃС‚СЂРѕРєРё СЃ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј РІ С‚Р°Р±Р»РёС†Рµ,
+-- РїСЂРёРЅРёРјР°СЋС‰Р°СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Рё РЅРµРєРѕС‚РѕСЂСѓСЋ СЃСЃС‹Р»РєСѓ РЅР° С‚Р°Р±Р»РёС†Сѓ РґР»СЏ РїСЂРѕРІРµСЂРєРё, Рё РІРѕР·РІСЂР°С‰Р°СЋС‰Р°СЏ boolean
 DROP FUNCTION IF EXISTS is_row_exists;
 DELIMITER //
 CREATE FUNCTION is_row_exists (target_id INT, target_type VARCHAR(50))
@@ -25,12 +25,12 @@ BEGIN
 END//
 DELIMITER ;
 
--- Триггер для проверки ссылочной целостности столбца target_id таблицы likes
+-- РўСЂРёРіРіРµСЂ РґР»СЏ РїСЂРѕРІРµСЂРєРё СЃСЃС‹Р»РѕС‡РЅРѕР№ С†РµР»РѕСЃС‚РЅРѕСЃС‚Рё СЃС‚РѕР»Р±С†Р° target_id С‚Р°Р±Р»РёС†С‹ likes
 DROP TRIGGER IF EXISTS likes_validation;
 DELIMITER //
 CREATE TRIGGER likes_validation BEFORE INSERT ON likes
 FOR EACH ROW 
--- "FOR EACH ROW" - "для каждой вставляемой строки"
+-- "FOR EACH ROW" - "РґР»СЏ РєР°Р¶РґРѕР№ РІСЃС‚Р°РІР»СЏРµРјРѕР№ СЃС‚СЂРѕРєРё"
 BEGIN
   IF NOT is_row_exists(NEW.target_id, NEW.target_type) THEN
     SIGNAL SQLSTATE "45000"
@@ -39,12 +39,12 @@ BEGIN
 END//
 DELIMITER ;
 
--- Триггер для проверки существования записи в таблице likes перед вставкой
+-- РўСЂРёРіРіРµСЂ РґР»СЏ РїСЂРѕРІРµСЂРєРё СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Рµ likes РїРµСЂРµРґ РІСЃС‚Р°РІРєРѕР№
 DROP TRIGGER IF EXISTS check_insert;
 DELIMITER //
 CREATE TRIGGER check_insert BEFORE INSERT ON likes
 FOR EACH ROW 
--- "FOR EACH ROW" - "для каждой вставляемой строки"
+-- "FOR EACH ROW" - "РґР»СЏ РєР°Р¶РґРѕР№ РІСЃС‚Р°РІР»СЏРµРјРѕР№ СЃС‚СЂРѕРєРё"
 BEGIN
 	IF EXISTS(SELECT 1 FROM likes WHERE (user_id = NEW.user_id) AND (target_id = NEW.target_id) AND (target_type = NEW.target_type))
 	THEN
@@ -55,20 +55,20 @@ BEGIN
 END//
 DELIMITER ;
 
--- Проверка
+-- РџСЂРѕРІРµСЂРєР°
 SELECT * FROM likes;
 DESC likes;
 INSERT INTO likes (user_id, target_id, target_type) VALUES (70, 109, 'artist');-- (91, 62, 'playlist');
 -- DELETE FROM likes WHERE id = 102;
 
--- Триггеры вставки и обновления значение profiles.restricted_mode в соответствии с возрастом пользователя
+-- РўСЂРёРіРіРµСЂС‹ РІСЃС‚Р°РІРєРё Рё РѕР±РЅРѕРІР»РµРЅРёСЏ Р·РЅР°С‡РµРЅРёРµ profiles.restricted_mode РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РІРѕР·СЂР°СЃС‚РѕРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 DESC profiles;
 
 DROP TRIGGER IF EXISTS insert_age_validation;
 DELIMITER //
 CREATE TRIGGER insert_age_validation BEFORE INSERT ON profiles
 FOR EACH ROW 
--- "FOR EACH ROW" - "для каждой вставляемой строки"
+-- "FOR EACH ROW" - "РґР»СЏ РєР°Р¶РґРѕР№ РІСЃС‚Р°РІР»СЏРµРјРѕР№ СЃС‚СЂРѕРєРё"
 BEGIN
   IF (FLOOR((TO_DAYS(NOW()) - TO_DAYS(NEW.birthday) )/ 365.25) < 18) AND (NEW.restricted_mode = FALSE) THEN
     SIGNAL SQLSTATE "45000"
@@ -81,7 +81,7 @@ DROP TRIGGER IF EXISTS update_age_validation;
 DELIMITER //
 CREATE TRIGGER update_age_validation BEFORE UPDATE ON profiles
 FOR EACH ROW 
--- "FOR EACH ROW" - "для каждой вставляемой строки"
+-- "FOR EACH ROW" - "РґР»СЏ РєР°Р¶РґРѕР№ РІСЃС‚Р°РІР»СЏРµРјРѕР№ СЃС‚СЂРѕРєРё"
 BEGIN
   IF (FLOOR((TO_DAYS(NOW()) - TO_DAYS(NEW.birthday) )/ 365.25) < 18) AND (NEW.restricted_mode = FALSE) THEN
     SIGNAL SQLSTATE "45000"
@@ -90,7 +90,7 @@ BEGIN
 END//
 DELIMITER ;
 
--- Проверка 
+-- РџСЂРѕРІРµСЂРєР° 
 SELECT * FROM profiles;
 INSERT INTO users VALUES (default, 'Vadim', 'Alekseev', 'vadima@gmail.com', default, default);
 INSERT INTO profiles(user_id, gender, birthday, paid_memberships, restricted_mode, net_adress)
@@ -100,7 +100,7 @@ DELETE FROM profiles WHERE user_id = 102;
 UPDATE profiles SET restricted_mode = FALSE WHERE user_id = 101;
 
 
--- Создадим функцию для генерации псевдоуникального 36-значного номера
+-- РЎРѕР·РґР°РґРёРј С„СѓРЅРєС†РёСЋ РґР»СЏ РіРµРЅРµСЂР°С†РёРё РїСЃРµРІРґРѕСѓРЅРёРєР°Р»СЊРЅРѕРіРѕ 36-Р·РЅР°С‡РЅРѕРіРѕ РЅРѕРјРµСЂР°
 DROP FUNCTION IF EXISTS generate_net;
 DELIMITER //
 CREATE FUNCTION generate_net()
@@ -118,7 +118,7 @@ RETURN @return_net;
 END //
 DELIMITER ;
 
--- Триггер для форматирования net_adress таблицы profiles
+-- РўСЂРёРіРіРµСЂ РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ net_adress С‚Р°Р±Р»РёС†С‹ profiles
 DROP TRIGGER IF EXISTS insert_net_profiles;
 DELIMITER //
 CREATE TRIGGER insert_net_profiles BEFORE INSERT ON profiles
@@ -133,7 +133,7 @@ BEGIN
 END//
 DELIMITER ;
 
--- Проверка
+-- РџСЂРѕРІРµСЂРєР°
 INSERT INTO users VALUES (default, 'German', 'Alekseev', 'german.a@gmail.com', default, default);
 SELECT * FROM users;
 INSERT INTO profiles(user_id, gender, birthday, paid_memberships, restricted_mode, net_adress)
@@ -142,7 +142,7 @@ default);
  SELECT net_adress FROM profiles WHERE user_id = 102;
 -- DELETE FROM profiles WHERE user_id = 102;
 
--- Триггер для форматирования net_adress таблицы artists
+-- РўСЂРёРіРіРµСЂ РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ net_adress С‚Р°Р±Р»РёС†С‹ artists
 DROP TRIGGER IF EXISTS insert_net_artists;
 DELIMITER //
 CREATE TRIGGER insert_net_artists BEFORE INSERT ON artists
@@ -157,11 +157,11 @@ BEGIN
 END//
 DELIMITER ;
 
--- проверка 
+-- РїСЂРѕРІРµСЂРєР° 
 SELECT * FROM artists;
 INSERT INTO artists VALUES (default, '101', 'Alekseev', 'Unknow artist', default, default, default);
 
--- Триггер для форматирования net_adress таблицы playlists
+-- РўСЂРёРіРіРµСЂ РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ net_adress С‚Р°Р±Р»РёС†С‹ playlists
 DROP TRIGGER IF EXISTS insert_net_playlists;
 DELIMITER //
 CREATE TRIGGER insert_net_playlists BEFORE INSERT ON playlists
@@ -176,7 +176,7 @@ BEGIN
 END//
 DELIMITER ;
 
--- проверка 
+-- РїСЂРѕРІРµСЂРєР° 
 SELECT * FROM playlists;
 INSERT INTO playlists VALUES (
 	default, 'Playlists for running', 99,
@@ -184,7 +184,7 @@ INSERT INTO playlists VALUES (
 	default, NULL, default, 'public', default,
 	default, default);
 
--- Триггер для вставки медиафайлов в конец плейлиста
+-- РўСЂРёРіРіРµСЂ РґР»СЏ РІСЃС‚Р°РІРєРё РјРµРґРёР°С„Р°Р№Р»РѕРІ РІ РєРѕРЅРµС† РїР»РµР№Р»РёСЃС‚Р°
 DROP TRIGGER IF EXISTS insert_before_playl_obj;
 DELIMITER //
 CREATE TRIGGER insert_before_playl_obj BEFORE INSERT ON playlists_objects
@@ -203,13 +203,13 @@ BEGIN
 END//
 DELIMITER ;
 
--- Проверка 
+-- РџСЂРѕРІРµСЂРєР° 
 SELECT @max_num;
 SELECT * FROM playlists_objects po ;
 INSERT INTO playlists_objects VALUES (default, 12, 2, default, default, default);
 SELECT * FROM playlists_objects WHERE playlist_id = 12;
 
--- Напишем процедуру для вставки медиа в плейлист с сохранением порядка
+-- РќР°РїРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ РґР»СЏ РІСЃС‚Р°РІРєРё РјРµРґРёР° РІ РїР»РµР№Р»РёСЃС‚ СЃ СЃРѕС…СЂР°РЅРµРЅРёРµРј РїРѕСЂСЏРґРєР°
 DROP PROCEDURE IF EXISTS insert_playlist_obj;
 DELIMITER //
 CREATE PROCEDURE insert_playlist_obj (id_play_list INT, id_media INT, num INT)
@@ -227,13 +227,13 @@ BEGIN
 END//
 DELIMITER ;
 
--- Проверка
--- Теперь для сохранения порядка вставка должна осуществляться через процедуру
+-- РџСЂРѕРІРµСЂРєР°
+-- РўРµРїРµСЂСЊ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РїРѕСЂСЏРґРєР° РІСЃС‚Р°РІРєР° РґРѕР»Р¶РЅР° РѕСЃСѓС‰РµСЃС‚РІР»СЏС‚СЊСЃСЏ С‡РµСЂРµР· РїСЂРѕС†РµРґСѓСЂСѓ
 CALL insert_playlist_obj(15, 30, 0);
 SELECT * FROM playlists_objects WHERE playlist_id = 15;
 DELETE FROM playlists_objects WHERE (playlist_id = 15);
 
--- Триггер для корректировки num_on_play при обновлении таблицы и переносе медиа в конец воспроизведения
+-- РўСЂРёРіРіРµСЂ РґР»СЏ РєРѕСЂСЂРµРєС‚РёСЂРѕРІРєРё num_on_play РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё С‚Р°Р±Р»РёС†С‹ Рё РїРµСЂРµРЅРѕСЃРµ РјРµРґРёР° РІ РєРѕРЅРµС† РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ
 DROP TRIGGER IF EXISTS update_before_playl_obj;
 DELIMITER //
 CREATE TRIGGER update_before_playl_obj BEFORE UPDATE ON playlists_objects
@@ -251,7 +251,7 @@ BEGIN
 END//
 DELIMITER ;
 
--- Напишем процедуру для изменения порядка медиа в плейлисте
+-- РќР°РїРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ РїРѕСЂСЏРґРєР° РјРµРґРёР° РІ РїР»РµР№Р»РёСЃС‚Рµ
 DROP PROCEDURE IF EXISTS update_num_playlist_obj;
 DELIMITER //
 CREATE PROCEDURE update_num_playlist_obj (target_id INT, target_num INT)
@@ -280,13 +280,13 @@ BEGIN
 END//
 DELIMITER ;
 
--- Проверка
+-- РџСЂРѕРІРµСЂРєР°
 SELECT * FROM playlists_objects WHERE playlist_id = 15;
 UPDATE playlists_objects SET num_on_play = 2 WHERE id = 105;
 CALL update_num_playlist_obj(103, 8);
 
 
--- Напишем процедуру для удаления из плейлиста
+-- РќР°РїРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ РёР· РїР»РµР№Р»РёСЃС‚Р°
 DROP PROCEDURE IF EXISTS delete_playlist_obj;
 DELIMITER //
 CREATE PROCEDURE delete_playlist_obj (target_id INT)
@@ -302,11 +302,11 @@ BEGIN
 END//
 DELIMITER ;
 
--- Проверка
+-- РџСЂРѕРІРµСЂРєР°
 SELECT * FROM playlists_objects WHERE playlist_id = 15;
 CALL delete_playlist_obj(107);
 
--- Просмотр созданного 
+-- РџСЂРѕСЃРјРѕС‚СЂ СЃРѕР·РґР°РЅРЅРѕРіРѕ 
 SHOW TRIGGERS;
 SHOW PROCEDURE STATUS;
 

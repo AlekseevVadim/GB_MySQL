@@ -1,81 +1,81 @@
--- База данных (БД) yutu_music.
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С… (Р‘Р”) yutu_music.
 
--- Делаем БД активной для работы
+-- Р”РµР»Р°РµРј Р‘Р” Р°РєС‚РёРІРЅРѕР№ РґР»СЏ СЂР°Р±РѕС‚С‹
 USE yutu_music;
 
--- Просмотр, доработка и улучшение сформированных ресурсом 'http://filldb.info' данных
+-- РџСЂРѕСЃРјРѕС‚СЂ, РґРѕСЂР°Р±РѕС‚РєР° Рё СѓР»СѓС‡С€РµРЅРёРµ СЃС„РѕСЂРјРёСЂРѕРІР°РЅРЅС‹С… СЂРµСЃСѓСЂСЃРѕРј 'http://filldb.info' РґР°РЅРЅС‹С…
 SHOW TABLES;
 
 
--- Таблица countries
+-- РўР°Р±Р»РёС†Р° countries
 SELECT * FROM countries;
 
 
--- Таблицы cities
+-- РўР°Р±Р»РёС†С‹ cities
 SELECT * FROM cities;
 
 
--- Таблица users
+-- РўР°Р±Р»РёС†Р° users
 SELECT * FROM users;
 DESC users;
 SHOW CREATE TABLE users;
--- Правим логику дат создания и обновления
--- Найдем строки с нарушением логики
+-- РџСЂР°РІРёРј Р»РѕРіРёРєСѓ РґР°С‚ СЃРѕР·РґР°РЅРёСЏ Рё РѕР±РЅРѕРІР»РµРЅРёСЏ
+-- РќР°Р№РґРµРј СЃС‚СЂРѕРєРё СЃ РЅР°СЂСѓС€РµРЅРёРµРј Р»РѕРіРёРєРё
 SELECT * FROM users WHERE created_at > updated_at;
--- Меняем даты обновления в проблемных местах
+-- РњРµРЅСЏРµРј РґР°С‚С‹ РѕР±РЅРѕРІР»РµРЅРёСЏ РІ РїСЂРѕР±Р»РµРјРЅС‹С… РјРµСЃС‚Р°С…
 UPDATE users SET updated_at = NOW() WHERE created_at > updated_at;
 
 
--- Таблица profiles
+-- РўР°Р±Р»РёС†Р° profiles
 SELECT * FROM profiles;
 DESC profiles;
 SHOW CREATE TABLE profiles;
--- Введем ограничение NOT NULL на столбцы restricted_mode и paid_memberships
+-- Р’РІРµРґРµРј РѕРіСЂР°РЅРёС‡РµРЅРёРµ NOT NULL РЅР° СЃС‚РѕР»Р±С†С‹ restricted_mode Рё paid_memberships
 ALTER TABLE profiles MODIFY restricted_mode BOOLEAN NOT NULL;
 ALTER TABLE profiles MODIFY paid_memberships enum('default','premium')
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-DEFAULT 'default' NOT NULL COMMENT 'Тип подписки на сервис';
--- Отформатируем данные столбца net_adress с сетевым адресом 
--- персональных страниц пользователей
+DEFAULT 'default' NOT NULL COMMENT 'РўРёРї РїРѕРґРїРёСЃРєРё РЅР° СЃРµСЂРІРёСЃ';
+-- РћС‚С„РѕСЂРјР°С‚РёСЂСѓРµРј РґР°РЅРЅС‹Рµ СЃС‚РѕР»Р±С†Р° net_adress СЃ СЃРµС‚РµРІС‹Рј Р°РґСЂРµСЃРѕРј 
+-- РїРµСЂСЃРѕРЅР°Р»СЊРЅС‹С… СЃС‚СЂР°РЅРёС† РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 UPDATE profiles SET net_adress = CONCAT("https://music.yutu.com/channel/", LEFT(MD5(RAND()), 24));
--- Установим значение поумолчанию на столбец net_adress
+-- РЈСЃС‚Р°РЅРѕРІРёРј Р·РЅР°С‡РµРЅРёРµ РїРѕСѓРјРѕР»С‡Р°РЅРёСЋ РЅР° СЃС‚РѕР»Р±РµС† net_adress
 ALTER TABLE profiles CHANGE COLUMN net_adress net_adress varchar(255)
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'https://music.yutu.com/channel/'
-NOT NULL COMMENT 'Ссылка на персональную страницу пользователя';
--- Отформатируем данные столбца restricted_mode в соответствии с возрастом
--- Посмотрим на возраст пользователей
+NOT NULL COMMENT 'РЎСЃС‹Р»РєР° РЅР° РїРµСЂСЃРѕРЅР°Р»СЊРЅСѓСЋ СЃС‚СЂР°РЅРёС†Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ';
+-- РћС‚С„РѕСЂРјР°С‚РёСЂСѓРµРј РґР°РЅРЅС‹Рµ СЃС‚РѕР»Р±С†Р° restricted_mode РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РІРѕР·СЂР°СЃС‚РѕРј
+-- РџРѕСЃРјРѕС‚СЂРёРј РЅР° РІРѕР·СЂР°СЃС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 SELECT user_id, FLOOR((TO_DAYS(NOW()) - TO_DAYS(birthday) )/ 365.25) AS age FROM profiles;
--- Откорректируем возраст пользователей для которых он сгенерирован менее 10 лет
+-- РћС‚РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј РІРѕР·СЂР°СЃС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РґР»СЏ РєРѕС‚РѕСЂС‹С… РѕРЅ СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅ РјРµРЅРµРµ 10 Р»РµС‚
 UPDATE profiles SET birthday = DATE(NOW() - INTERVAL 18 YEAR) 
 WHERE FLOOR((TO_DAYS(NOW()) - TO_DAYS(birthday) )/ 365.25) < 10;
--- Установим значение True для ограничения ненормативного контента для пользователей младше 18 лет
+-- РЈСЃС‚Р°РЅРѕРІРёРј Р·РЅР°С‡РµРЅРёРµ True РґР»СЏ РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РЅРµРЅРѕСЂРјР°С‚РёРІРЅРѕРіРѕ РєРѕРЅС‚РµРЅС‚Р° РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РјР»Р°РґС€Рµ 18 Р»РµС‚
 UPDATE profiles SET restricted_mode = TRUE 
 WHERE FLOOR((TO_DAYS(NOW()) - TO_DAYS(birthday) )/ 365.25) < 18;
--- Добавим ограничение к столбцу birtday
+-- Р”РѕР±Р°РІРёРј РѕРіСЂР°РЅРёС‡РµРЅРёРµ Рє СЃС‚РѕР»Р±С†Сѓ birtday
 ALTER TABLE profiles MODIFY birthday DATE NOT NULL;
--- Устанавливаем дату создания профиля равной дате создания пользователя
+-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґР°С‚Сѓ СЃРѕР·РґР°РЅРёСЏ РїСЂРѕС„РёР»СЏ СЂР°РІРЅРѕР№ РґР°С‚Рµ СЃРѕР·РґР°РЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 UPDATE profiles p SET p.created_at = (SELECT u.created_at FROM users u WHERE p.user_id = u.id);
 
 
--- Таблица artists
+-- РўР°Р±Р»РёС†Р° artists
 SELECT * FROM artists;
 DESC artists;
 SHOW CREATE TABLE artists;
--- Отформатируем данные столбца net_adress с сетевым адресом страниц исполнителей
+-- РћС‚С„РѕСЂРјР°С‚РёСЂСѓРµРј РґР°РЅРЅС‹Рµ СЃС‚РѕР»Р±С†Р° net_adress СЃ СЃРµС‚РµРІС‹Рј Р°РґСЂРµСЃРѕРј СЃС‚СЂР°РЅРёС† РёСЃРїРѕР»РЅРёС‚РµР»РµР№
 UPDATE artists SET net_adress = CONCAT("https://music.yutu.com/artists/", LEFT(MD5(RAND()), 24));
--- Установим ограничение уникальности и значение поумолчанию на столбец net_adress
+-- РЈСЃС‚Р°РЅРѕРІРёРј РѕРіСЂР°РЅРёС‡РµРЅРёРµ СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё Рё Р·РЅР°С‡РµРЅРёРµ РїРѕСѓРјРѕР»С‡Р°РЅРёСЋ РЅР° СЃС‚РѕР»Р±РµС† net_adress
 ALTER TABLE artists CHANGE COLUMN net_adress net_adress varchar(255)
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 DEFAULT 'https://music.yutu.com/artists/'
-NOT NULL COMMENT 'Ссылка на страницу исполнителя';
--- Устраняем нарушение логики дат создания и обновления в проблемных местах
+NOT NULL COMMENT 'РЎСЃС‹Р»РєР° РЅР° СЃС‚СЂР°РЅРёС†Сѓ РёСЃРїРѕР»РЅРёС‚РµР»СЏ';
+-- РЈСЃС‚СЂР°РЅСЏРµРј РЅР°СЂСѓС€РµРЅРёРµ Р»РѕРіРёРєРё РґР°С‚ СЃРѕР·РґР°РЅРёСЏ Рё РѕР±РЅРѕРІР»РµРЅРёСЏ РІ РїСЂРѕР±Р»РµРјРЅС‹С… РјРµСЃС‚Р°С…
 UPDATE artists SET updated_at = NOW() WHERE created_at > updated_at;
 
 
--- Таблица media
+-- РўР°Р±Р»РёС†Р° media
 SELECT * FROM media;
 DESC media;
--- Откорректируем значения столбца file_path
+-- РћС‚РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј Р·РЅР°С‡РµРЅРёСЏ СЃС‚РѕР»Р±С†Р° file_path
 CREATE TEMPORARY TABLE extensions_media(name VARCHAR(20));
 INSERT INTO extensions_media VALUES ('.aac'), ('.flac');
 UPDATE media 
@@ -92,20 +92,20 @@ SET file_path =
 	name, (SELECT name FROM extensions_media ORDER BY RAND() LIMIT 1)
 	)
 WHERE media_type = 'music_video';
--- Сократим продолжительность медиафайлов в столбце size
+-- РЎРѕРєСЂР°С‚РёРј РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ РјРµРґРёР°С„Р°Р№Р»РѕРІ РІ СЃС‚РѕР»Р±С†Рµ size
 UPDATE media 
 SET size = TIME_FORMAT(
 	CONCAT('00', ':0', MOD(MINUTE(media.size), 10), ':', SECOND(media.size)), '%H:%i:%s'
 );
--- Там где продолжительность менее 1 минуты, добавим ещё 2
+-- РўР°Рј РіРґРµ РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ РјРµРЅРµРµ 1 РјРёРЅСѓС‚С‹, РґРѕР±Р°РІРёРј РµС‰С‘ 2
 UPDATE media 
 SET size = TIME_FORMAT(
 	CONCAT('00', ':0', MINUTE(media.size) + 2, ':', SECOND(media.size)), '%H:%i:%s'
 ) WHERE media.size < '00:01:00';
--- Заменим пропуски в lyrics на NULL
+-- Р—Р°РјРµРЅРёРј РїСЂРѕРїСѓСЃРєРё РІ lyrics РЅР° NULL
 UPDATE media SET lyrics = NULL WHERE lyrics = '';
--- Заполним столбец metadata
--- Создадим временную таблицу для внесения в метаданные жанра композиции
+-- Р—Р°РїРѕР»РЅРёРј СЃС‚РѕР»Р±РµС† metadata
+-- РЎРѕР·РґР°РґРёРј РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ РґР»СЏ РІРЅРµСЃРµРЅРёСЏ РІ РјРµС‚Р°РґР°РЅРЅС‹Рµ Р¶Р°РЅСЂР° РєРѕРјРїРѕР·РёС†РёРё
 CREATE TEMPORARY TABLE genre(name VARCHAR(30));
 INSERT INTO genre VALUES
 ('Blues'),
@@ -117,16 +117,16 @@ INSERT INTO genre VALUES
 ('Classical'),
 ('Latin');
 SELECT * FROM genre;
--- Присваиваем жанр для каждого медиафайла
+-- РџСЂРёСЃРІР°РёРІР°РµРј Р¶Р°РЅСЂ РґР»СЏ РєР°Р¶РґРѕРіРѕ РјРµРґРёР°С„Р°Р№Р»Р°
 UPDATE media SET metadata = CONCAT('{"genre":"', 
   (SELECT name FROM genre ORDER BY RAND() LIMIT 1),
   '"}');
- -- Изменим тип данных столбца
+ -- РР·РјРµРЅРёРј С‚РёРї РґР°РЅРЅС‹С… СЃС‚РѕР»Р±С†Р°
 DESC media;
 ALTER TABLE media MODIFY metadata JSON;
--- Просмотрим присвоенные данные
+-- РџСЂРѕСЃРјРѕС‚СЂРёРј РїСЂРёСЃРІРѕРµРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ
 SELECT JSON_EXTRACT(metadata, '$.genre') FROM media;
- -- Присвоим некоторым медиафайлам еще по одному определению жанра.
+ -- РџСЂРёСЃРІРѕРёРј РЅРµРєРѕС‚РѕСЂС‹Рј РјРµРґРёР°С„Р°Р№Р»Р°Рј РµС‰Рµ РїРѕ РѕРґРЅРѕРјСѓ РѕРїСЂРµРґРµР»РµРЅРёСЋ Р¶Р°РЅСЂР°.
 UPDATE media 
 SET metadata = JSON_REPLACE(
 metadata, '$.genre', 'Blues, Jazz'
@@ -136,75 +136,75 @@ SET metadata = JSON_REPLACE(
 metadata, '$.genre', 'R&B, Pop'
 ) WHERE JSON_EXTRACT(metadata, '$.genre') = 'R&B' AND id < 50;
 SELECT id, metadata FROM media;
--- Устраняем нарушение логики дат создания и обновления в проблемных местах
+-- РЈСЃС‚СЂР°РЅСЏРµРј РЅР°СЂСѓС€РµРЅРёРµ Р»РѕРіРёРєРё РґР°С‚ СЃРѕР·РґР°РЅРёСЏ Рё РѕР±РЅРѕРІР»РµРЅРёСЏ РІ РїСЂРѕР±Р»РµРјРЅС‹С… РјРµСЃС‚Р°С…
 UPDATE media SET updated_at = NOW() WHERE created_at > updated_at;
 
 
--- Таблица playlists
+-- РўР°Р±Р»РёС†Р° playlists
 SELECT * FROM playlists;
 DESC playlists;
 SHOW CREATE TABLE playlists;
--- Расставим значения в столбце artist_id произвольно
+-- Р Р°СЃСЃС‚Р°РІРёРј Р·РЅР°С‡РµРЅРёСЏ РІ СЃС‚РѕР»Р±С†Рµ artist_id РїСЂРѕРёР·РІРѕР»СЊРЅРѕ
 UPDATE playlists SET artist_id = FLOOR(1 + RAND()*100);
--- Отформатируем данные столбца image_path с адресом расположения файла обложки
+-- РћС‚С„РѕСЂРјР°С‚РёСЂСѓРµРј РґР°РЅРЅС‹Рµ СЃС‚РѕР»Р±С†Р° image_path СЃ Р°РґСЂРµСЃРѕРј СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ С„Р°Р№Р»Р° РѕР±Р»РѕР¶РєРё
 UPDATE playlists 
 SET image_path = CONCAT("https://dropbox.net/yutu_music/", 'file_', id, '.png');
--- Добавим для столбца image_path значение поумолчанию - путь к стандартной обложке
+-- Р”РѕР±Р°РІРёРј РґР»СЏ СЃС‚РѕР»Р±С†Р° image_path Р·РЅР°С‡РµРЅРёРµ РїРѕСѓРјРѕР»С‡Р°РЅРёСЋ - РїСѓС‚СЊ Рє СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ РѕР±Р»РѕР¶РєРµ
 ALTER TABLE playlists MODIFY image_path VARCHAR(255) DEFAULT 'https://dropbox.net/yutu_music/default_image.png';
--- Заполним столбец metadata значениями с атрибутами альбомов
--- Измении формат данных столбца
+-- Р—Р°РїРѕР»РЅРёРј СЃС‚РѕР»Р±РµС† metadata Р·РЅР°С‡РµРЅРёСЏРјРё СЃ Р°С‚СЂРёР±СѓС‚Р°РјРё Р°Р»СЊР±РѕРјРѕРІ
+-- РР·РјРµРЅРёРё С„РѕСЂРјР°С‚ РґР°РЅРЅС‹С… СЃС‚РѕР»Р±С†Р°
 ALTER TABLE playlists MODIFY metadata JSON;
--- Создадим временную таблицу с типами альбомов и заполним ее значениями
+-- РЎРѕР·РґР°РґРёРј РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ СЃ С‚РёРїР°РјРё Р°Р»СЊР±РѕРјРѕРІ Рё Р·Р°РїРѕР»РЅРёРј РµРµ Р·РЅР°С‡РµРЅРёСЏРјРё
 CREATE TEMPORARY TABLE play_types(name VARCHAR(2));
 INSERT INTO play_types VALUES ('SP'), ('EP'), ('LP');
--- Присвоим всем альбомам в таблице playlists произвольные атрибуты
+-- РџСЂРёСЃРІРѕРёРј РІСЃРµРј Р°Р»СЊР±РѕРјР°Рј РІ С‚Р°Р±Р»РёС†Рµ playlists РїСЂРѕРёР·РІРѕР»СЊРЅС‹Рµ Р°С‚СЂРёР±СѓС‚С‹
 UPDATE playlists SET metadata =
 JSON_OBJECT('play_type', (SELECT name FROM play_types ORDER BY RAND() LIMIT 1), 'date_release',
 (SELECT DATE(created_at) - INTERVAL 10 year FROM users ORDER BY RAND()LIMIT 1))
 WHERE playlist_type = 'album';
--- Восстановим логику дат создания записи в БД и выпуска альбома
+-- Р’РѕСЃСЃС‚Р°РЅРѕРІРёРј Р»РѕРіРёРєСѓ РґР°С‚ СЃРѕР·РґР°РЅРёСЏ Р·Р°РїРёСЃРё РІ Р‘Р” Рё РІС‹РїСѓСЃРєР° Р°Р»СЊР±РѕРјР°
 UPDATE playlists SET created_at = CURRENT_TIMESTAMP() WHERE JSON_EXTRACT(metadata, '$.date_release') < DATE(created_at);
--- Отформатируем данные столбца net_adress с сетевым адресом страниц плейлистов
+-- РћС‚С„РѕСЂРјР°С‚РёСЂСѓРµРј РґР°РЅРЅС‹Рµ СЃС‚РѕР»Р±С†Р° net_adress СЃ СЃРµС‚РµРІС‹Рј Р°РґСЂРµСЃРѕРј СЃС‚СЂР°РЅРёС† РїР»РµР№Р»РёСЃС‚РѕРІ
 UPDATE playlists SET net_adress = CONCAT("https://music.yutu.com/playlists/", LEFT(MD5(RAND()), 24));
--- Установим ограничение уникальности и значение поумолчанию на столбец net_adress
+-- РЈСЃС‚Р°РЅРѕРІРёРј РѕРіСЂР°РЅРёС‡РµРЅРёРµ СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё Рё Р·РЅР°С‡РµРЅРёРµ РїРѕСѓРјРѕР»С‡Р°РЅРёСЋ РЅР° СЃС‚РѕР»Р±РµС† net_adress
 ALTER TABLE playlists CHANGE COLUMN net_adress net_adress varchar(255)
 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 DEFAULT 'https://music.yutu.com/playlists/'
-NOT NULL COMMENT 'Ссылка на страницу плейлиста';
--- Устраняем нарушение логики дат создания и обновления в проблемных местах
+NOT NULL COMMENT 'РЎСЃС‹Р»РєР° РЅР° СЃС‚СЂР°РЅРёС†Сѓ РїР»РµР№Р»РёСЃС‚Р°';
+-- РЈСЃС‚СЂР°РЅСЏРµРј РЅР°СЂСѓС€РµРЅРёРµ Р»РѕРіРёРєРё РґР°С‚ СЃРѕР·РґР°РЅРёСЏ Рё РѕР±РЅРѕРІР»РµРЅРёСЏ РІ РїСЂРѕР±Р»РµРјРЅС‹С… РјРµСЃС‚Р°С…
 UPDATE playlists SET updated_at = NOW() WHERE created_at > updated_at;
 
 
--- Таблица playlists_objects
+-- РўР°Р±Р»РёС†Р° playlists_objects
 SELECT * FROM playlists_objects;
 DESC playlists_objects;
--- Расставим значения в столбцах playlist_id и media_id произвольно
+-- Р Р°СЃСЃС‚Р°РІРёРј Р·РЅР°С‡РµРЅРёСЏ РІ СЃС‚РѕР»Р±С†Р°С… playlist_id Рё media_id РїСЂРѕРёР·РІРѕР»СЊРЅРѕ
 UPDATE playlists_objects SET
 playlist_id = FLOOR(1 + RAND()*100),
 media_id = FLOOR(1 + RAND()*100);
--- Приведем в порядок номера воспроизведения медиафайлов в плейлистах
--- Создадим временную таблицу для хранения результатов нумерации композиций
+-- РџСЂРёРІРµРґРµРј РІ РїРѕСЂСЏРґРѕРє РЅРѕРјРµСЂР° РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ РјРµРґРёР°С„Р°Р№Р»РѕРІ РІ РїР»РµР№Р»РёСЃС‚Р°С…
+-- РЎРѕР·РґР°РґРёРј РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РЅСѓРјРµСЂР°С†РёРё РєРѕРјРїРѕР·РёС†РёР№
 CREATE TEMPORARY TABLE order_track(id INT, num_track INT);
 INSERT INTO order_track (
 	SELECT id, ROW_NUMBER() OVER(PARTITION BY playlist_id) as num_play
 	FROM playlists_objects po
 );
 SELECT * FROM order_track;
--- Обновим данные в столбце в соответствии с полученной нумерацией
+-- РћР±РЅРѕРІРёРј РґР°РЅРЅС‹Рµ РІ СЃС‚РѕР»Р±С†Рµ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РїРѕР»СѓС‡РµРЅРЅРѕР№ РЅСѓРјРµСЂР°С†РёРµР№
 UPDATE playlists_objects po
 SET num_on_play = (
 	SELECT ot.num_track 
 	FROM order_track ot
 	WHERE po.id = ot.id
 );
--- Устраняем нарушение логики дат создания и обновления в проблемных местах
+-- РЈСЃС‚СЂР°РЅСЏРµРј РЅР°СЂСѓС€РµРЅРёРµ Р»РѕРіРёРєРё РґР°С‚ СЃРѕР·РґР°РЅРёСЏ Рё РѕР±РЅРѕРІР»РµРЅРёСЏ РІ РїСЂРѕР±Р»РµРјРЅС‹С… РјРµСЃС‚Р°С…
 UPDATE playlists_objects SET updated_at = NOW() WHERE created_at > updated_at;
 
 
--- Таблица likes
+-- РўР°Р±Р»РёС†Р° likes
 SELECT * FROM likes;
 DESC likes;
--- Приведем target_id в соответствие с количеством записей соответствующих таблиц
+-- РџСЂРёРІРµРґРµРј target_id РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј Р·Р°РїРёСЃРµР№ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… С‚Р°Р±Р»РёС†
 UPDATE likes SET target_id = FLOOR(1 + RAND() * (SELECT COUNT(id) FROM artists)) 
 WHERE target_type = 'artist';
 UPDATE likes SET target_id = FLOOR(1 + RAND() * (SELECT COUNT(id) FROM media)) 
@@ -213,18 +213,18 @@ UPDATE likes SET target_id = FLOOR(1 + RAND() * (SELECT COUNT(id) FROM playlists
 WHERE target_type = 'playlist';
 
 
--- Таблица users_plays
+-- РўР°Р±Р»РёС†Р° users_plays
 SELECT * FROM users_plays up;
 DESC users_plays;
--- Приведем target_id в соответствие с количеством записей соответствующих таблиц
+-- РџСЂРёРІРµРґРµРј target_id РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј Р·Р°РїРёСЃРµР№ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… С‚Р°Р±Р»РёС†
 UPDATE users_plays SET target_id = FLOOR(1 + RAND() * (SELECT COUNT(id) FROM media));
--- Сократим продолжительность прослушивания
+-- РЎРѕРєСЂР°С‚РёРј РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ РїСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ
 UPDATE users_plays 
 SET play_time = TIME_FORMAT(
 	CONCAT('00', ':0', MOD(MINUTE(play_time), 10), ':', SECOND(play_time)), '%H:%i:%s'
 );
--- Там где продолжительность прослушивания больше продолжительности
--- композиции или видео - сократим до этой величины
+-- РўР°Рј РіРґРµ РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ РїСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ Р±РѕР»СЊС€Рµ РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚Рё
+-- РєРѕРјРїРѕР·РёС†РёРё РёР»Рё РІРёРґРµРѕ - СЃРѕРєСЂР°С‚РёРј РґРѕ СЌС‚РѕР№ РІРµР»РёС‡РёРЅС‹
 UPDATE users_plays up SET up.play_time =
 (SELECT media.size FROM media WHERE media.id = up.target_id)
 WHERE (up.play_time > 

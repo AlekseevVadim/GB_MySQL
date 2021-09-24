@@ -1,10 +1,10 @@
--- База данных (БД) yutu_music.
+-- Р‘Р°Р·Р° РґР°РЅРЅС‹С… (Р‘Р”) yutu_music.
 
--- Делаем БД активной для работы
+-- Р”РµР»Р°РµРј Р‘Р” Р°РєС‚РёРІРЅРѕР№ РґР»СЏ СЂР°Р±РѕС‚С‹
 USE yutu_music;
 
--- Создаем внешние ключи
--- для таблицы profiles
+-- РЎРѕР·РґР°РµРј РІРЅРµС€РЅРёРµ РєР»СЋС‡Рё
+-- РґР»СЏ С‚Р°Р±Р»РёС†С‹ profiles
 DESC profiles;
 
 ALTER TABLE profiles
@@ -12,7 +12,7 @@ ADD CONSTRAINT profiles_user_id_fk
 FOREIGN KEY (user_id)
 REFERENCES users(id)
 ON DELETE CASCADE;
--- Для удаления созданного ограничения
+-- Р”Р»СЏ СѓРґР°Р»РµРЅРёСЏ СЃРѕР·РґР°РЅРЅРѕРіРѕ РѕРіСЂР°РЅРёС‡РµРЅРёСЏ
 -- ALTER TABLE profiles DROP CONSTRAINT profiles_user_id_fk;
 ALTER TABLE profiles
 ADD CONSTRAINT profiles_city_id_fk
@@ -20,7 +20,7 @@ FOREIGN KEY (city_id)
 REFERENCES cities(id)
 ON DELETE SET NULL;
 
--- для таблицы cities
+-- РґР»СЏ С‚Р°Р±Р»РёС†С‹ cities
 DESC cities;
 
 ALTER TABLE cities
@@ -29,7 +29,7 @@ FOREIGN KEY (country_id)
 REFERENCES countries(id)
 ON DELETE SET NULL;
 
--- для artists
+-- РґР»СЏ artists
 DESC artists;
 
 ALTER TABLE artists
@@ -38,7 +38,7 @@ FOREIGN KEY (user_id)
 REFERENCES users(id)
 ON DELETE RESTRICT;
 
--- для таблицы media
+-- РґР»СЏ С‚Р°Р±Р»РёС†С‹ media
 DESC media;
 
 ALTER TABLE media
@@ -49,7 +49,7 @@ ON DELETE RESTRICT;
 
 -- ALTER TABLE media DROP CONSTRAINT media_artist_id_fk;
 
--- для таблицы playlists
+-- РґР»СЏ С‚Р°Р±Р»РёС†С‹ playlists
 DESC playlists;
 
 ALTER TABLE playlists
@@ -60,7 +60,7 @@ ON DELETE RESTRICT;
 
 -- ALTER TABLE playlists DROP CONSTRAINT playlists_artist_id_fk;
 
--- для таблицы playlists_ojects
+-- РґР»СЏ С‚Р°Р±Р»РёС†С‹ playlists_ojects
 DESC playlists_objects;
 
 ALTER TABLE playlists_objects
@@ -79,7 +79,7 @@ ON DELETE RESTRICT;
 
 --  ALTER TABLE playlists_objects DROP CONSTRAINT playlists_obj_media_id_fk;
 
--- для таблицы users_plays
+-- РґР»СЏ С‚Р°Р±Р»РёС†С‹ users_plays
 DESC users_plays ;
 
 ALTER TABLE users_plays
@@ -87,7 +87,7 @@ ADD CONSTRAINT users_plays_user_id_fk
 FOREIGN KEY (user_id)
 REFERENCES users(id)
 ON DELETE CASCADE;
--- Для удаления созданного ограничения
+-- Р”Р»СЏ СѓРґР°Р»РµРЅРёСЏ СЃРѕР·РґР°РЅРЅРѕРіРѕ РѕРіСЂР°РЅРёС‡РµРЅРёСЏ
 -- ALTER TABLE users_plays DROP CONSTRAINT users_plays_user_id_fk;
 
 ALTER TABLE users_plays
@@ -96,7 +96,7 @@ FOREIGN KEY (target_id)
 REFERENCES media(id)
 ON DELETE CASCADE;
 
--- для таблицы likes
+-- РґР»СЏ С‚Р°Р±Р»РёС†С‹ likes
 DESC likes;
 
 ALTER TABLE likes
