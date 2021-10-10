@@ -1,9 +1,9 @@
--- Задание к уроку 11. Оптимизация запросов
+-- Р—Р°РґР°РЅРёРµ Рє СѓСЂРѕРєСѓ 11. РћРїС‚РёРјРёР·Р°С†РёСЏ Р·Р°РїСЂРѕСЃРѕРІ
 
--- Задание 1
--- Создайте таблицу logs типа Archive. Пусть при каждом создании записи в таблицах users,
--- catalogs и products в таблицу logs помещается время и дата создания записи, название
--- таблицы, идентификатор первичного ключа и содержимое поля name.
+-- Р—Р°РґР°РЅРёРµ 1
+-- РЎРѕР·РґР°Р№С‚Рµ С‚Р°Р±Р»РёС†Сѓ logs С‚РёРїР° Archive. РџСѓСЃС‚СЊ РїСЂРё РєР°Р¶РґРѕРј СЃРѕР·РґР°РЅРёРё Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Р°С… users,
+-- catalogs Рё products РІ С‚Р°Р±Р»РёС†Сѓ logs РїРѕРјРµС‰Р°РµС‚СЃСЏ РІСЂРµРјСЏ Рё РґР°С‚Р° СЃРѕР·РґР°РЅРёСЏ Р·Р°РїРёСЃРё, РЅР°Р·РІР°РЅРёРµ
+-- С‚Р°Р±Р»РёС†С‹, РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРµСЂРІРёС‡РЅРѕРіРѕ РєР»СЋС‡Р° Рё СЃРѕРґРµСЂР¶РёРјРѕРµ РїРѕР»СЏ name.
 
 USE shop;
 
@@ -19,11 +19,11 @@ SELECT * FROM products;
 DESC products;
 
 CREATE TABLE logs (
-id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания записи в таблице",
-tbl_name VARCHAR(150) NOT NULL COMMENT "Название таблицы",
-row_id INT UNSIGNED NOT NULL COMMENT "Ссылка на идентификатор строки таблицы",
-row_name VARCHAR(255) NOT NULL COMMENT "Содержимое поля name таблицы"
+id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё",
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Рµ",
+tbl_name VARCHAR(150) NOT NULL COMMENT "РќР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹",
+row_id INT UNSIGNED NOT NULL COMMENT "РЎСЃС‹Р»РєР° РЅР° РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃС‚СЂРѕРєРё С‚Р°Р±Р»РёС†С‹",
+row_name VARCHAR(255) NOT NULL COMMENT "РЎРѕРґРµСЂР¶РёРјРѕРµ РїРѕР»СЏ name С‚Р°Р±Р»РёС†С‹"
 ) ENGINE=ARCHIVE;
 
 DROP TRIGGER IF EXISTS users_insert_logs;
@@ -54,17 +54,17 @@ END//
 DELIMITER ;
 
 
--- Проверка
+-- РџСЂРѕРІРµСЂРєР°
 INSERT INTO users VALUES (default, 'Igor', '1990-10-05', default, default);
-INSERT INTO catalogs VALUES (default, 'Ноутбуки');
+INSERT INTO catalogs VALUES (default, 'РќРѕСѓС‚Р±СѓРєРё');
 INSERT INTO products VALUES (default, 'Intel Core i5-8000', NULL, NULL, 1, default, default);
 
 SELECT * FROM logs;
 SHOW TABLE STATUS LIKE 'logs';
 
 
--- Задание 2
--- (по желанию) Создайте SQL-запрос, который помещает в таблицу users миллион записей.
+-- Р—Р°РґР°РЅРёРµ 2
+-- (РїРѕ Р¶РµР»Р°РЅРёСЋ) РЎРѕР·РґР°Р№С‚Рµ SQL-Р·Р°РїСЂРѕСЃ, РєРѕС‚РѕСЂС‹Р№ РїРѕРјРµС‰Р°РµС‚ РІ С‚Р°Р±Р»РёС†Сѓ users РјРёР»Р»РёРѕРЅ Р·Р°РїРёСЃРµР№.
 
 CREATE TABLE rand_users (name VARCHAR(50), birthday_at DATE);
 
