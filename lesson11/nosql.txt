@@ -1,0 +1,96 @@
+-- 1 Задание
+-- В базе данных Redis подберите коллекцию для подсчета посещений с определенных
+-- IP-адресов.
+
+-- Создаём хеш-таблицу
+HINCRBY ip '127.0.0.1' 1
+HINCRBY ip '127.0.0.2' 1
+HGETALL ip
+HGET ip '127.0.0.1'
+
+-- 2 Задание
+-- При помощи базы данных Redis решите задачу поиска имени пользователя по электронному
+-- адресу и наоборот, поиск электронного адреса пользователя по его имени.
+
+HSET users:1 name 'Vadim'
+HSET users:1 email 'vadim@gmail.com'
+HSET users:2 name 'Elena'
+HSET users:2 email 'elena@gmail.com'
+HSET users:3 name 'Maxim'
+HSET users:3 email 'maxim@gmail.com'
+
+-- Создаем множества со значениями идентификаторов пользователей
+-- (множества на случай более сложного поиска по нескольким параметрам)
+SADD name:Vadim 1
+SADD email:vadim@gmail.com 1
+SADD name:Elena 2
+SADD email:elena@gmail.com 2
+
+-- Поиск имени по электронному адресу
+SINTER email:vadim@gmail.com
+HGET users:1 name
+-- Поиск адреса по имени
+SINTER name:Elena
+HGET users:2 email
+
+3 Задание
+-- Организуйте хранение категорий и товарных позиций учебной базы данных shop в СУБД
+-- MongoDB.
+
+-- Вывод всех БД
+> show dbs 
+
+-- Переключение на БД shop
+> use shop
+
+-- Добавление записей в коллекцию catalogs
+> db.catalogs.insert({"name": "Процессоры"},
+ {"name": "Материнские платы"},
+ {"name": "Видеокарты"},
+ {"name": "Жесткие диски"},
+ {"name": "Оперативная память"})
+ 
+ -- Выборка из коллекции
+>db.catalogs.find()
+ -- Вывод:
+  db.catalogs.find()
+{ "_id" : ObjectId("6163451b9b38b30a9ce5a106"), "name" : "Процессоры" }
+{ "_id" : ObjectId("6163452b9b38b30a9ce5a107"), "name" : "Материнские платы" }
+{ "_id" : ObjectId("6163453c9b38b30a9ce5a108"), "name" : "Видеокарты" }
+{ "_id" : ObjectId("6163454f9b38b30a9ce5a109"), "name" : "Жесткие диски" }
+{ "_id" : ObjectId("6163455c9b38b30a9ce5a10a"), "name" : "Оперативная память" }
+
+-- Добавление записей в коллекцию products
+>db.products.insert(
+	{ "name": "Intel Core i3-8100",
+	"description": "Процессор для настольных персональных компьютеров, основанных на платформе Intel.",
+	"price": 7890.00, 
+	"catalog_id": new ObjectId("6163451b9b38b30a9ce5a106")
+	}
+)
+>db.products.insert(
+	{ "name": "Intel Core i5-7400",
+	"description": "Процессор для настольных персональных компьютеров, основанных на платформе Intel.",
+	"price": 12700.00, 
+	"catalog_id": new ObjectId("6163451b9b38b30a9ce5a106")
+	}
+)
+>db.products.insert(
+	{ "name": "AMD FX-8320E",
+	"description": "Процессор для настольных персональных компьютеров, основанных на платформе AMD.",
+	"price": 4780.00, 
+	"catalog_id": new ObjectId("6163451b9b38b30a9ce5a106")
+	}
+)
+>db.products.insert(
+	{ "name": "ASUS ROG MAXIMUS X HERO",
+	"description": "Материнская плата ASUS ROG MAXIMUS X HERO, Z370, Socket 1151-V2, DDR4, ATX",
+	"price": 19310.00, 
+	"catalog_id": new ObjectId("6163452b9b38b30a9ce5a107")
+	}
+)
+
+ -- Выборки из коллекции
+>db.products.find()
+>db.products.find({"catalog_id": ObjectId("6163451b9b38b30a9ce5a106")})
+
